@@ -1,8 +1,8 @@
 name := "spray-json"
 
-version := "1.2.6"
+version := "1.2.7-NAP"
 
-organization := "io.spray"
+organization := "com.netaporter"
 
 organizationHomepage := Some(new URL("http://spray.io"))
 
@@ -66,16 +66,35 @@ scalaBinaryVersion <<= scalaVersion(sV => if (CrossVersion.isStable(sV)) CrossVe
 
 publishMavenStyle := true
 
-publishTo <<= version { version =>
-  Some {
-    "spray repo" at {
-      // public uri is repo.spray.io, we use an SSH tunnel to the nexus here
-      "http://localhost:42424/content/repositories/" + {
-        if (version.trim.endsWith("SNAPSHOT")) "snapshots/" else"releases/"
-      }
-    }
-  }
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+publishTo <<= version { (v: String) =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
 }
+
+pomExtra := (
+  <scm>
+    <url>git@github.com:net-a-porter/scala-uri.git</url>
+    <connection>scm:git@github.com:net-a-porter/scala-uri.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>Mathias</id>
+      <name>Mathias Doenitz</name>
+      <url>https://github.com/sirthias</url>
+    </developer>
+    <developer>
+      <id>Johannes</id>
+      <name>Johannes Rudolph</name>
+      <url>https://github.com/jrudolph</url>
+    </developer>
+  </developers>)
 
 
 ///////////////
